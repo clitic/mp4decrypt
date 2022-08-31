@@ -2,10 +2,10 @@
 
 <p align="center">
   <a href="https://crates.io/crates/mp4decrypt">
-    <img src="https://img.shields.io/crates/d/kdam?style=flat-square">
+    <img src="https://img.shields.io/crates/d/mp4decrypt?style=flat-square">
   </a>
   <a href="https://crates.io/crates/mp4decrypt">
-    <img src="https://img.shields.io/crates/v/kdam?style=flat-square">
+    <img src="https://img.shields.io/crates/v/mp4decrypt?style=flat-square">
   </a>
   <a href="https://github.com/clitic/mp4decrypt">
     <img src="https://img.shields.io/github/workflow/status/clitic/mp4decrypt/Rust?logo=github&style=flat-square">
