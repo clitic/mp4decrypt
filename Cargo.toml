@@ -1,6 +1,6 @@
 [package]
 name = "mp4decrypt"
-version = "0.1.0+1.6.0-639"
+version = "0.1.1+1.6.0-639"
 description = "Decrypt mp4 streams with Bento4 SDK"
 authors = ["clitic <clitic21@gmail.com>"]
 repository = "https://github.com/clitic/mp4decrypt"
@@ -14,6 +14,7 @@ include = [
     "src/*",
     ".gitignore",
     ".gitmodules",
+	"build.rs",
     "Cargo.toml",
     "CHANGELOG.md",
     "LICENSE-APACHE",
