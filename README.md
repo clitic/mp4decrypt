@@ -24,7 +24,7 @@
   </a>
 </p>
 
-This library provides a safe function to decrypt encrypted mp4 data stream using [Bento4 SDK](https://github.com/axiomatic-systems/Bento4).
+This library provides a safe function to decrypt encrypted mp4 data stream using [Bento4](https://github.com/axiomatic-systems/Bento4).
 
 ## Getting Started
 
