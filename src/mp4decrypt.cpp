@@ -1,5 +1,8 @@
 // https://github.com/axiomatic-systems/Bento4/blob/master/Source/C%2B%2B/Apps/Mp4Decrypt/Mp4Decrypt.cpp
 
+#include <stdio.h>
+#include <stdlib.h>
+
 #include "Ap4.h"
 #include "mp4decrypt.h"
 

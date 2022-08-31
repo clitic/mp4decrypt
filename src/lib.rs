@@ -1,8 +1,4 @@
 //! This crate provides a safe function to decrypt encrypted mp4 data stream using [Bento4 SDK](https://github.com/axiomatic-systems/Bento4).
-//! To build this crate it require these envoirnment variables to be defined.
-//!
-//! * `BENTO4_SOURCE_PATH` - The path of [Bento4](https://github.com/axiomatic-systems/Bento4/tags) source code.
-//! * `AP4_LIB_PATH` - The path of ap4 library from Bento4 SDK.
 
 #![allow(improper_ctypes)]
 
@@ -34,22 +30,27 @@ extern "C" {
     ) -> c_int;
 }
 
-extern "C" fn callback(store: *mut Vec<u8>, data: *const c_uchar, size: c_uint) {
+extern "C" fn callback(decrypted_stream: *mut Vec<u8>, data: *const c_uchar, size: c_uint) {
     unsafe {
-        *store = std::slice::from_raw_parts(data, size as usize).to_vec();
+        *decrypted_stream = std::slice::from_raw_parts(data, size as usize).to_vec();
     }
 }
 
 /// Decrypt encrypted mp4 data stream using given keys.
-/// Maximum supported stream size is around `4.29` G.B.
+/// Maximum supported stream size is around `4.29` G.B i.e. [u32::MAX](u32::MAX).
 ///
-/// ## Arguments
+/// # Arguments
 ///
 /// * `data` - Encrypted data stream.
-/// * `keys` - Keys hashmap with key id mapping to decryption key.
-/// * `fragments_info` (optional) - Create decryption processor from this stream not `data` stream.
+/// * `keys` - Hashmap of keys for decrypting data stream.
+///            Hashmap `key` is either a track ID in decimal or a 128-bit KID in hex.
+///            Hashmap `value` is a 128-bit key in hex. <br>
+///            1. For dcf files, use 1 as the track index <br>
+///            2. For Marlin IPMP/ACGK, use 0 as the track ID <br>
+///            3. KIDs are only applicable to some encryption methods like MPEG-CENC <br>
+/// * `fragments_info` (optional) - Decrypt the fragments read from data stream, with track info read from this stream.
 ///
-/// ## Example
+/// # Example
 ///
 /// ```no_run
 /// use std::collections::HashMap;
@@ -60,15 +61,15 @@ extern "C" fn callback(store: *mut Vec<u8>, data: *const c_uchar, size: c_uint) 
 ///     "100b6c20940f779a4589152b57d2dacb".to_owned(),
 /// );
 ///
-/// let decrypted_data = mp4decrypt::decrypt(&[0, 0, 0, 112], keys, None).unwrap();
+/// let decrypted_data = mp4decrypt::mp4decrypt(&[0, 0, 0, 112], keys, None).unwrap();
 /// ```
-pub fn decrypt(
+pub fn mp4decrypt(
     data: &[u8],
     keys: HashMap<String, String>,
     fragments_info: Option<&[u8]>,
 ) -> Result<Vec<u8>, String> {
     let mut data = data.to_vec();
-    let data_size = u32::try_from(data.len()).map_err(|_| format!("data stream is too large"))?;
+    let data_size = u32::try_from(data.len()).map_err(|_| "data stream is too large".to_owned())?;
 
     let mut c_kids_holder = vec![];
     let mut c_keys_holder = vec![];
@@ -88,7 +89,7 @@ pub fn decrypt(
         if let Some(fragments_info) = fragments_info {
             let mut fragments_info_data = fragments_info.to_vec();
             let fragments_info_data_size = u32::try_from(fragments_info_data.len())
-                .map_err(|_| format!("fragments info is too large"))?;
+                .map_err(|_| "fragments info is too large".to_owned())?;
 
             decrypt_in_memory_with_fragments_info(
                 data.as_mut_ptr(),

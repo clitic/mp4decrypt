@@ -13,7 +13,7 @@ fn main() {
         "100b6c20940f779a4589152b57d2dacb".to_owned(),
     );
 
-    let decrypted_data = mp4decrypt::decrypt(&input, keys, None).unwrap();
+    let decrypted_data = mp4decrypt::mp4decrypt(&input, keys, None).unwrap();
 
     std::fs::File::create("decrypted.mp4")
         .unwrap()

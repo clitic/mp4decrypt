@@ -1,7 +1,7 @@
 [package]
 name = "mp4decrypt"
-version = "0.1.0"
-description = "Decrypt mp4 streams in memory with Bento4 SDK"
+version = "0.1.0+1.6.0-639"
+description = "Decrypt mp4 streams with Bento4 SDK"
 authors = ["clitic <clitic21@gmail.com>"]
 repository = "https://github.com/clitic/mp4decrypt"
 documentation = "https://docs.rs/mp4decrypt"
@@ -9,8 +9,24 @@ license = "MIT OR Apache-2.0"
 readme = "README.md"
 keywords = ["crypto"]
 categories = ["cryptography"]
-exclude = ["examples"]
 edition = "2021"
+include = [
+    "src/*",
+    ".gitignore",
+    ".gitmodules",
+    "Cargo.toml",
+    "CHANGELOG.md",
+    "LICENSE-APACHE",
+    "LICENSE-MIT",
+    "README.md",
+    "Bento4/Source/C++/Core/*",
+    "Bento4/Source/C++/Codecs/*",
+    "Bento4/Source/C++/Crypto/*",
+    "Bento4/Source/C++/MetaData/*",
+    "Bento4/Source/C++/System/StdC/*",
+    "Bento4/Source/C++/System/Win32/Ap4Win32Random.cpp",
+    "Bento4/Source/C++/System/Posix/Ap4PosixRandom.cpp",
+]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
