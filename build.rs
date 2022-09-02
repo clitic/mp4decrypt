@@ -4,7 +4,9 @@ fn main() {
     // let bento4 = std::path::Path::new(std::env::var("CARGO_MANIFEST_DIR").unwrap()).join("Bento4");
     // println!("cargo:rustc-link-search=.");
     // println!("cargo:rustc-link-lib=static=ap4");
-
+    // println!("cargo:rustc-link-search=D:/Android/android-ndk-r22b/toolchains/llvm/prebuilt/windows-x86_64/sysroot/usr/lib/aarch64-linux-android");
+    // println!("cargo:rustc-link-lib=static=stdc++");
+	
     let mut builder = cc::Build::new();
     let mut builder = builder
         .cpp(true)

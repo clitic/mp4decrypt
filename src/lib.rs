@@ -1,4 +1,4 @@
-//! This crate provides a safe function to decrypt encrypted mp4 data stream using [Bento4 SDK](https://github.com/axiomatic-systems/Bento4).
+//! This crate provides a safe function to decrypt encrypted mp4 data stream using [Bento4](https://github.com/axiomatic-systems/Bento4).
 
 #![allow(improper_ctypes)]
 
@@ -6,7 +6,7 @@ use std::collections::HashMap;
 use std::ffi::CString;
 use std::os::raw::{c_char, c_int, c_uchar, c_uint};
 
-extern "C" {
+extern {
     fn decrypt_in_memory(
         data: *const c_uchar,
         data_size: c_uint,
@@ -14,7 +14,7 @@ extern "C" {
         keys: *mut *const c_char,
         nkeys: c_int,
         decrypted_data: *mut Vec<u8>,
-        callback: extern "C" fn(*mut Vec<u8>, *const c_uchar, c_uint),
+        callback: extern fn(*mut Vec<u8>, *const c_uchar, c_uint),
     ) -> c_int;
 
     fn decrypt_in_memory_with_fragments_info(
@@ -24,13 +24,13 @@ extern "C" {
         keys: *mut *const c_char,
         nkeys: c_int,
         decrypted_data: *mut Vec<u8>,
-        callback: extern "C" fn(*mut Vec<u8>, *const c_uchar, c_uint),
+        callback: extern fn(*mut Vec<u8>, *const c_uchar, c_uint),
         fragments_info_data: *const c_uchar,
         fragments_info_data_size: c_uint,
     ) -> c_int;
 }
 
-extern "C" fn callback(decrypted_stream: *mut Vec<u8>, data: *const c_uchar, size: c_uint) {
+extern fn callback(decrypted_stream: *mut Vec<u8>, data: *const c_uchar, size: c_uint) {
     unsafe {
         *decrypted_stream = std::slice::from_raw_parts(data, size as usize).to_vec();
     }

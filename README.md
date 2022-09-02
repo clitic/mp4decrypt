@@ -32,10 +32,10 @@ Add this to your Cargo.toml file.
 
 ```toml
 [dependencies]
-kdam = "0.1.1"
+mp4decrypt = "0.1.1"
 
 # Or add from github main branch.
-kdam = { git = "https://github.com/clitic/mp4decrypt.git", branch = "main" }
+mp4decrypt = { git = "https://github.com/clitic/mp4decrypt.git", branch = "main" }
 ```
 
 Or add from command line.
