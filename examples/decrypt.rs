@@ -4,8 +4,8 @@ use std::collections::HashMap;
 use std::io::Write;
 
 fn main() {
-    let mut input = include_bytes!("init.mp4").to_vec();
-    input.extend(include_bytes!("segment_0.m4s"));
+    let mut input = include_bytes!("decrypt-sample/init.mp4").to_vec();
+    input.extend(include_bytes!("decrypt-sample/segment_0.m4s"));
 
     let mut keys = HashMap::new();
     keys.insert(

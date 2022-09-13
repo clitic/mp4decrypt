@@ -1,4 +1,6 @@
 //! This crate provides a safe function to decrypt encrypted mp4 data stream using [Bento4](https://github.com/axiomatic-systems/Bento4).
+//!
+//! Maximum supported stream size is around `4.29` G.B i.e. [u32::MAX](u32::MAX).
 
 #![allow(improper_ctypes)]
 
@@ -6,7 +8,7 @@ use std::collections::HashMap;
 use std::ffi::CString;
 use std::os::raw::{c_char, c_int, c_uchar, c_uint};
 
-extern {
+extern "C" {
     fn decrypt_in_memory(
         data: *const c_uchar,
         data_size: c_uint,
@@ -14,7 +16,7 @@ extern {
         keys: *mut *const c_char,
         nkeys: c_int,
         decrypted_data: *mut Vec<u8>,
-        callback: extern fn(*mut Vec<u8>, *const c_uchar, c_uint),
+        callback: extern "C" fn(*mut Vec<u8>, *const c_uchar, c_uint),
     ) -> c_int;
 
     fn decrypt_in_memory_with_fragments_info(
@@ -24,20 +26,26 @@ extern {
         keys: *mut *const c_char,
         nkeys: c_int,
         decrypted_data: *mut Vec<u8>,
-        callback: extern fn(*mut Vec<u8>, *const c_uchar, c_uint),
+        callback: extern "C" fn(*mut Vec<u8>, *const c_uchar, c_uint),
         fragments_info_data: *const c_uchar,
         fragments_info_data_size: c_uint,
     ) -> c_int;
+
+    fn basic_mp4split(
+        data: *const c_uchar,
+        data_size: c_uint,
+        split_data: *mut Vec<Vec<u8>>,
+        callback: extern "C" fn(*mut Vec<Vec<u8>>, *const c_uchar, c_uint),
+    ) -> c_int;
 }
 
-extern fn callback(decrypted_stream: *mut Vec<u8>, data: *const c_uchar, size: c_uint) {
+extern "C" fn decrypt_callback(decrypted_stream: *mut Vec<u8>, data: *const c_uchar, size: c_uint) {
     unsafe {
         *decrypted_stream = std::slice::from_raw_parts(data, size as usize).to_vec();
     }
 }
 
 /// Decrypt encrypted mp4 data stream using given keys.
-/// Maximum supported stream size is around `4.29` G.B i.e. [u32::MAX](u32::MAX).
 ///
 /// # Arguments
 ///
@@ -98,7 +106,7 @@ pub fn mp4decrypt(
                 c_keys.as_mut_ptr(),
                 1,
                 &mut *decrypted_data,
-                callback,
+                decrypt_callback,
                 fragments_info_data.as_mut_ptr(),
                 fragments_info_data_size,
             )
@@ -110,7 +118,7 @@ pub fn mp4decrypt(
                 c_keys.as_mut_ptr(),
                 1,
                 &mut *decrypted_data,
-                callback,
+                decrypt_callback,
             )
         }
     };
@@ -123,6 +131,54 @@ pub fn mp4decrypt(
             101 => "invalid key id".to_owned(),
             102 => "invalid hex format for key".to_owned(),
             x => format!("failed to decrypt data with error code {}", x),
+        })
+    }
+}
+
+extern "C" fn split_callback(
+    decrypted_stream: *mut Vec<Vec<u8>>,
+    data: *const c_uchar,
+    size: c_uint,
+) {
+    unsafe {
+        (*decrypted_stream).push(std::slice::from_raw_parts(data, size as usize).to_vec());
+    }
+}
+
+/// Splits a fragmented MP4 stream into discrete streams.
+/// First stream is init stream.
+/// 
+/// # Example
+///
+/// ```no_run
+/// let split_data = mp4decrypt::mp4split(&[0, 0, 0, 112]).unwrap();
+/// let init = split_data[0].clone();
+/// let segments = split_data[1..].to_vec();
+/// ```
+pub fn mp4split(data: &[u8]) -> Result<Vec<Vec<u8>>, String> {
+    let mut data = data.to_vec();
+    let data_size = u32::try_from(data.len()).map_err(|_| "data stream is too large".to_owned())?;
+
+    let mut split_data: Box<Vec<Vec<u8>>> = Box::new(vec![]);
+
+    let result = unsafe {
+        basic_mp4split(
+            data.as_mut_ptr(),
+            data_size,
+            &mut *split_data,
+            split_callback,
+        )
+    };
+
+    if result == 0 {
+        Ok(*split_data)
+    } else {
+        Err(match result {
+            100 => "no movie found in data stream".to_owned(),
+            101 => "cannot write ftyp segment".to_owned(),
+            102 => "cannot write init segment".to_owned(),
+            103 => "invalid media format".to_owned(),
+            x => format!("failed to split data with error code {}", x),
         })
     }
 }

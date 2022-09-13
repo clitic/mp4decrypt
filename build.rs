@@ -1,6 +1,8 @@
 fn main() {
     println!("cargo:rerun-if-changed=src/mp4decrypt.cpp");
+    println!("cargo:rerun-if-changed=src/mp4split.cpp");
     println!("cargo:rerun-if-changed=src/mp4decrypt.h");
+    println!("cargo:rerun-if-changed=src/mp4split.h");
     // let bento4 = std::path::Path::new(std::env::var("CARGO_MANIFEST_DIR").unwrap()).join("Bento4");
     // println!("cargo:rustc-link-search=.");
     // println!("cargo:rustc-link-lib=static=ap4");
@@ -43,7 +45,8 @@ fn main() {
                 .unwrap()
                 .map(|x| x.unwrap()),
         )
-        .file("src/mp4decrypt.cpp");
+        .file("src/mp4decrypt.cpp")
+        .file("src/mp4split.cpp");
 
     if builder.get_compiler().is_like_msvc() {
         builder = builder
