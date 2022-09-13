@@ -10,7 +10,7 @@
   <a href="https://github.com/clitic/mp4decrypt">
     <img src="https://img.shields.io/github/workflow/status/clitic/mp4decrypt/Rust?logo=github&style=flat-square">
   </a>
-  <a href="https://docs.rs/kdam/latest/mp4decrypt">
+  <a href="https://docs.rs/mp4decrypt/latest/mp4decrypt">
     <img src="https://img.shields.io/docsrs/mp4decrypt?logo=docsdotrs&style=flat-square">
   </a>
   <a href="https://github.com/clitic/mp4decrypt#license">
