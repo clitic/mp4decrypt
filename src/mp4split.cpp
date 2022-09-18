@@ -51,7 +51,7 @@ int basic_mp4split(
     
     // save the init segment
     AP4_MemoryByteStream* output = new AP4_MemoryByteStream();
-    AP4_Result result = NULL;
+    AP4_Result result;
 
     AP4_FtypAtom* ftyp = file->GetFileType(); 
     if (ftyp) {
