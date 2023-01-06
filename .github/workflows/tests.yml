@@ -1,4 +1,4 @@
-name: Rust
+name: Tests
 
 on:
   push:
@@ -20,5 +20,9 @@ jobs:
         submodules: true
     - name: Build
       run: cargo build --verbose
-    - name: Run tests
+    - name: Run Tests
       run: cargo test --verbose
+    - name: Testing mp4decrypt::mp4decrypt
+      run: cargo run --example decrypt
+    - name: Testing mp4decrypt::mp4split
+      run: cargo run --example split
