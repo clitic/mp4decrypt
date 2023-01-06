@@ -91,7 +91,7 @@ extern "C" fn decrypt_callback(decrypted_stream: *mut Vec<u8>, data: *const c_uc
 pub fn mp4decrypt(
     data: &[u8],
     keys: HashMap<String, String>,
-    fragments_info: Option<&[u8]>,
+    fragments_info: Option<Vec<u8>>,
 ) -> Result<Vec<u8>, String> {
     let mut data = data.to_vec();
     let data_size = u32::try_from(data.len()).map_err(|_| "data stream is too large".to_owned())?;
@@ -112,7 +112,7 @@ pub fn mp4decrypt(
 
     let result = unsafe {
         if let Some(fragments_info) = fragments_info {
-            let mut fragments_info_data = fragments_info.to_vec();
+            let mut fragments_info_data = fragments_info.clone();
             let fragments_info_data_size = u32::try_from(fragments_info_data.len())
                 .map_err(|_| "fragments info is too large".to_owned())?;
 
