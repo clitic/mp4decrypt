@@ -6,7 +6,6 @@ fn main() {
 
     cc::Build::new()
         .cpp(true)
-        .warnings(false)
         .include("Bento4/Source/C++/Core")
         .include("Bento4/Source/C++/Codecs")
         .include("Bento4/Source/C++/Crypto")

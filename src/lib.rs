@@ -7,23 +7,6 @@
 use std::collections::HashMap;
 use std::ffi::CString;
 use std::os::raw::{c_char, c_int, c_uchar, c_uint};
-use std::sync::atomic::{AtomicBool, Ordering};
-
-static CRATE_LOCKED: AtomicBool = AtomicBool::new(false);
-
-fn acquire_crate_lock() {
-    loop {
-        if !CRATE_LOCKED.load(Ordering::Acquire) {
-            CRATE_LOCKED.store(true, Ordering::SeqCst);
-            break;
-        }
-        std::thread::sleep(std::time::Duration::from_millis(500));
-    }
-}
-
-fn release_crate_lock() {
-    CRATE_LOCKED.store(false, Ordering::Release);
-}
 
 extern "C" {
     fn decrypt_in_memory(
@@ -116,8 +99,7 @@ pub fn mp4decrypt(
             let fragments_info_data_size = u32::try_from(fragments_info_data.len())
                 .map_err(|_| "fragments info is too large".to_owned())?;
 
-            acquire_crate_lock();
-            let result = decrypt_in_memory_with_fragments_info(
+            decrypt_in_memory_with_fragments_info(
                 data.as_mut_ptr(),
                 data_size,
                 c_kids.as_mut_ptr(),
@@ -127,12 +109,9 @@ pub fn mp4decrypt(
                 decrypt_callback,
                 fragments_info_data.as_mut_ptr(),
                 fragments_info_data_size,
-            );
-            release_crate_lock();
-            result
+            )
         } else {
-            acquire_crate_lock();
-            let result = decrypt_in_memory(
+            decrypt_in_memory(
                 data.as_mut_ptr(),
                 data_size,
                 c_kids.as_mut_ptr(),
@@ -140,9 +119,7 @@ pub fn mp4decrypt(
                 1,
                 &mut *decrypted_data,
                 decrypt_callback,
-            );
-            release_crate_lock();
-            result
+            )
         }
     };
 
@@ -184,15 +161,12 @@ pub fn mp4split(data: &[u8]) -> Result<Vec<Vec<u8>>, String> {
     let mut split_data: Box<Vec<Vec<u8>>> = Box::new(vec![]);
 
     let result = unsafe {
-        acquire_crate_lock();
-        let result = basic_mp4split(
+        basic_mp4split(
             data.as_mut_ptr(),
             data_size,
             &mut *split_data,
             split_callback,
-        );
-        release_crate_lock();
-        result
+        )
     };
 
     if result == 0 {

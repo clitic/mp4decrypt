@@ -98,8 +98,8 @@ int decrypt_in_memory(
     input->Seek(0);
 
     AP4_MemoryByteStream* output = new AP4_MemoryByteStream();
-
-    AP4_Result result = processor->Process(*input, *output, NULL);
+    AP4_AtomFactory atom_factory;
+    AP4_Result result = processor->Process(*input, *output, NULL, atom_factory);
     if (AP4_FAILED(result)) {
         return result;
     }
@@ -207,8 +207,8 @@ int decrypt_in_memory_with_fragments_info(
 
     AP4_MemoryByteStream* input = new AP4_MemoryByteStream(data, data_size);
     AP4_MemoryByteStream* output = new AP4_MemoryByteStream();
-
-    AP4_Result result = processor->Process(*input, *output, *fragments_info, NULL);
+    AP4_AtomFactory atom_factory;
+    AP4_Result result = processor->Process(*input, *output, *fragments_info, NULL, atom_factory);
     if (AP4_FAILED(result)) {
         return result;
     }

@@ -24,7 +24,7 @@
   </a>
 </p>
 
-This library provides a safe function to decrypt encrypted mp4 data stream using [Bento4](https://github.com/axiomatic-systems/Bento4). Splitting mp4 streams can also be done.
+This library provides a safe function to decrypt encrypted mp4 data stream using [Bento4](https://github.com/axiomatic-systems/Bento4). Also, some basic mp4 splitting can be done.
 
 ## Getting Started
 
@@ -32,7 +32,7 @@ Add this to your Cargo.toml file.
 
 ```toml
 [dependencies]
-mp4decrypt = "0.3.0"
+mp4decrypt = "0.3.1"
 ```
 
 Or add from command line.
